@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.0.0.alpha1 / unreleased
+
+* [BUGFIX] Verify host path consistency by default ([#91](https://github.com/enriclluelles/route_translator/issues/91), [#171](https://github.com/enriclluelles/route_translator/issues/171))
+* [FEATURE] Remove the option to verify host path consistency
+
 ## 8.0.0 / 2020-04-17
 
 * [FEATURE] Drop Ruby 2.3 support
