@@ -15,6 +15,19 @@ module RouteTranslator
             end
           end
 
+          def untranslatable_segment?(segment)
+            segment.blank? || segment.starts_with?('(', '*')
+          end
+
+          def translate_segment_with_semicolon(segment, locale, scope)
+            if segment.starts_with?(':')
+              named_param, hyphenized = segment.split('-', 2)
+              return "#{named_param}-#{translate(hyphenized, locale, scope)}" if hyphenized
+            end
+
+            segment
+          end
+
           def translatable_segment(segment)
             matches = TRANSLATABLE_SEGMENT.match(segment)
             matches[1] if matches.present?
@@ -49,14 +62,8 @@ module RouteTranslator
         # If there is no translation, the path segment is blank, begins with a
         # ":" (param key) or "*" (wildcard), the segment is returned untouched.
         def translate(segment, locale, scope)
-          return segment if segment.empty?
-
-          if segment.starts_with?(':')
-            named_param, hyphenized = segment.split('-', 2)
-            return "#{named_param}-#{translate(hyphenized, locale, scope)}" if hyphenized
-          end
-
-          return segment if segment.starts_with?('(', '*') || segment.include?(':')
+          return segment if untranslatable_segment?(segment)
+          return translate_segment_with_semicolon(segment, locale, scope) if segment.include?(':')
 
           appended_part = segment.slice!(/(\()$/)
           str = translatable_segment(segment)
